@@ -22,7 +22,7 @@ INDEX_HTML = """
     <p>Email hint (or space to skip): <input name="email" value=" "></p>
     <p><button type="submit">Run search</button></p>
   </form>
-  <p><small>Session ID: get it from your browser cookies while logged into Instagram (Application → Cookies → sessionid).</small></p>
+  <p><small>Session ID: get it from your browser cookies while logged into Instagram (Application → Cookies → sessionid). Optional: set INSTAGRAM_SESSION_ID on Render to use a default.</small></p>
 </body>
 </html>
 """
