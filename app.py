@@ -16,12 +16,13 @@ INDEX_HTML = """
 <body>
   <h1>Run yesitsme (uses this server's IP)</h1>
   <form method="post" action="/run">
+    <p>Session ID (required): <input name="session_id" type="text" placeholder="Paste your Instagram sessionid cookie" style="width: 100%; max-width: 400px;" required></p>
     <p>Name (required): <input name="name" value="Jeremiah Bates" required></p>
     <p>Phone hint (e.g. +1 *** *** **30): <input name="phone" value="+1 *** *** **30"></p>
     <p>Email hint (or space to skip): <input name="email" value=" "></p>
     <p><button type="submit">Run search</button></p>
   </form>
-  <p><small>Session ID is read from INSTAGRAM_SESSION_ID env var.</small></p>
+  <p><small>Session ID: get it from your browser cookies while logged into Instagram (Application → Cookies → sessionid).</small></p>
 </body>
 </html>
 """
@@ -43,11 +44,14 @@ def index():
 
 @app.route("/run", methods=["POST"])
 def run():
-    session_id = os.environ.get("INSTAGRAM_SESSION_ID")
-    if not session_id:
-        return jsonify({"error": "INSTAGRAM_SESSION_ID not set"}), 500
-
     data = request.get_json(silent=True) or {}
+    session_id = (request.form.get("session_id") or data.get("session_id") or "").strip() or os.environ.get("INSTAGRAM_SESSION_ID")
+    if not session_id:
+        err = "Session ID is required: add it in the form or set INSTAGRAM_SESSION_ID env var."
+        if request.content_type and "application/json" in request.content_type:
+            return jsonify({"error": err}), 400
+        return f"<h1>Error</h1><p>{err}</p><a href='/'>Back</a>", 400
+
     name = (request.form.get("name") or data.get("name") or "").strip()
     if not name:
         return jsonify({"error": "name is required"}), 400
