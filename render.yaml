@@ -1,0 +1,10 @@
+# Render blueprint — optional; you can also create the service in the dashboard.
+services:
+  - type: web
+    name: yesitsme
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: INSTAGRAM_SESSION_ID
+        sync: false  # Set this in Render dashboard → Environment (secret)
