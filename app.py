@@ -5,6 +5,7 @@ Set INSTAGRAM_SESSION_ID in the environment; never commit it.
 import os
 import subprocess
 import re
+from urllib.parse import unquote
 from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
@@ -45,7 +46,8 @@ def index():
 @app.route("/run", methods=["POST"])
 def run():
     data = request.get_json(silent=True) or {}
-    session_id = (request.form.get("session_id") or data.get("session_id") or "").strip() or os.environ.get("INSTAGRAM_SESSION_ID")
+    raw_session = (request.form.get("session_id") or data.get("session_id") or "").strip() or os.environ.get("INSTAGRAM_SESSION_ID") or ""
+    session_id = unquote(raw_session) if raw_session else ""
     if not session_id:
         err = "Session ID is required: add it in the form or set INSTAGRAM_SESSION_ID env var."
         if request.content_type and "application/json" in request.content_type:
